@@ -1,0 +1,79 @@
+#!/usr/bin/bash
+
+if ! repo=$(git rev-parse --git-dir)
+then
+  exit
+fi
+root=$(dirname $repo)
+
+revs=()
+for arg
+do
+  if git rev-parse --verify $arg >/dev/null 2>&1
+  then
+    revs[${#revs[@]}]=$(git name-rev --name-only --always $arg)
+  fi
+done
+
+$EDITOR -s <(
+GIT_PAGER= \
+  git diff --raw --abbrev=40 --find-renames=1% "$@" \
+  | cut -c2- \
+  | while read oldmode newmode oldblob newblob status oldname newname
+do
+  if [[ -z $newname ]]
+  then
+    newname=$oldname
+  fi
+
+  echo ":cd $root"
+  echo ":tabnew"
+  echo ":setlocal noswapfile"
+  if [[ $newblob == "0000000000000000000000000000000000000000" ]]
+  then
+    echo ":e $oldname"
+  else
+    if diff <(git show $newblob) $root/$newname >/dev/null
+    then
+      echo ":e $newname"
+    else
+      echo ":0read !git show $newblob"
+    fi
+    if [[ "${revs[1]}" && $newname ]]
+    then
+      echo ":set buftype=nofile"
+      echo ":file ${revs[1]}:$newname"
+    elif [[ "${revs[1]}" ]]
+    then
+      echo ":set buftype=nofile"
+      echo ":file ${revs[1]}:$oldname"
+    elif [[ $newname ]]
+    then
+      echo ":file $newname"
+    else
+      echo ":file $oldname"
+    fi
+  fi
+  echo ":filetype detect"
+
+  echo ":vert diffsplit"
+  echo ":enew"
+  echo ":setlocal noswapfile"
+  echo ":set buftype=nofile"
+  echo ":0read !git show $oldblob"
+  if [[ "${revs[0]}" ]]
+  then
+    echo ":file ${revs[0]}:$oldname"
+  else
+    echo ":file $oldname"
+  fi
+  echo ":filetype detect"
+
+  echo ":diffthis"
+  echo ":wincmd l"
+  echo ":0"
+done
+echo ":tabfirst"
+echo ":tabclose"
+)
+
