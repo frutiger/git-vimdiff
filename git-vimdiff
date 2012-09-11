@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/bash
 
 if ! repo=$(git rev-parse --git-dir)
 then
