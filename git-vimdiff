@@ -71,6 +71,10 @@ do
   echo ":wincmd l"
   echo ":0"
 done
+if [[ ${PIPESTATUS[0]} != 0 ]]
+then
+    echo ":q"
+fi
 echo ":tabfirst"
 echo ":tabclose"
 )
