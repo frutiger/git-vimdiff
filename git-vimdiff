@@ -15,8 +15,7 @@ do
 done
 
 $EDITOR -s <(
-GIT_PAGER= \
-  git diff --raw --abbrev=40 --find-renames=1% "$@" \
+git --no-pager diff --raw --abbrev=40 --find-renames=1% "$@" \
   | cut -c2- \
   | while read oldmode newmode oldblob newblob status oldname newname
 do
@@ -32,11 +31,12 @@ do
   then
     echo ":e $oldname"
   else
-    if diff <(git show $newblob) $root/$newname >/dev/null
+    if diff <(git --no-pager show $newblob) $root/$newname >/dev/null
     then
       echo ":e $newname"
     else
-      echo ":0read !git show $newblob"
+      echo ":0read ++edit !git --no-pager show $newblob"
+      echo ":normal Gdd"
     fi
     if [[ "${revs[1]}" && $newname ]]
     then
@@ -53,20 +53,19 @@ do
       echo ":file $oldname"
     fi
   fi
-  echo ":filetype detect"
 
   echo ":vert diffsplit"
   echo ":enew"
   echo ":setlocal noswapfile"
   echo ":set buftype=nofile"
-  echo ":0read !git show $oldblob"
+  echo ":0read ++edit !git --no-pager show $oldblob"
+  echo ":normal Gdd"
   if [[ "${revs[0]}" ]]
   then
     echo ":file ${revs[0]}:$oldname"
   else
     echo ":file $oldname"
   fi
-  echo ":filetype detect"
 
   echo ":diffthis"
   echo ":wincmd l"
