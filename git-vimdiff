@@ -1,10 +1,9 @@
 #!/usr/bin/bash
 
-if ! repo=$(git rev-parse --git-dir)
+if ! root=$(git rev-parse --show-toplevel)
 then
   exit
 fi
-root=$(dirname $repo)
 
 revs=()
 for arg
