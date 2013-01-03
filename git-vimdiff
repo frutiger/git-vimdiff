@@ -1,4 +1,4 @@
-#!/usr/bin/bash
+#!/bin/bash
 
 if ! root=$(git rev-parse --show-toplevel)
 then
