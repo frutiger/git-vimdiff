@@ -120,24 +120,24 @@ def root():
                                     '--show-toplevel']).decode('utf-8')[:-1]
 
 def write_header(f):
-    f.write(u':cd {}\n'.format(root()))
+    f.write(u'cd {}\n'.format(root()))
 
 counter = 2
 def write_hash(f, mode, hash, name, type=None, score=None):
     global counter
-    f.write(u':setlocal noswapfile\n')
-    f.write(u':set buftype=nowrite\n')
+    f.write(u'setlocal noswapfile\n')
+    f.write(u'set buftype=nowrite\n')
 
     name = os.path.basename(name).replace(' ', '\\ ')
 
     if mode == '160000':
         status = '{0}:\\ commit\\ {1}'.format(name, hash[:8])
-        f.write(u':setlocal statusline={}\n'.format(status))
-        f.write(u':silent f {0}\\ ({1})\n'.format(name, hash[:8]))
+        f.write(u'setlocal statusline={}\n'.format(status))
+        f.write(u'silent f {0}\\ ({1})\n'.format(name, hash[:8]))
         return
 
-    f.write(u':silent 0read !git --no-pager show {}\n'.format(hash))
-    f.write(u':+1d\n')
+    f.write(u'silent 0read !git --no-pager show {}\n'.format(hash))
+    f.write(u'+1d\n')
 
     if score != None:
         status = '{0}\\ [{1}%%\\ similar]\\ ({2})'.format(name, score, mode)
@@ -146,27 +146,27 @@ def write_hash(f, mode, hash, name, type=None, score=None):
     else:
         status = '{0}\\ ({1})'.format(name, mode)
 
-    f.write(u':setlocal statusline={}\n'.format(status))
-    f.write(u':silent f {0}\\ ({1})\\ [{2}]\n'.format(name, hash[:8], counter))
+    f.write(u'setlocal statusline={}\n'.format(status))
+    f.write(u'silent f {0}\\ ({1})\\ [{2}]\n'.format(name, hash[:8], counter))
     counter = counter + 1
 
-    f.write(u':0\n')
+    f.write(u'0\n')
 
 def write_split(f):
-        f.write(u':vert diffsplit\n')
-        f.write(u':enew\n')
+        f.write(u'vert diffsplit\n')
+        f.write(u'enew\n')
 
 def write_diff(f):
-    f.write(u':diffthis\n')
-    f.write(u':wincmd l\n')
+    f.write(u'diffthis\n')
+    f.write(u'wincmd l\n')
 
 def write_change(f, change):
-    f.write(u':tabnew\n')
+    f.write(u'tabnew\n')
 
     if change['type'] == 'modified':
         if change['dst']['hash'] == '0000000000000000000000000000000000000000':
-            f.write(u':e {}\n'.format(change['name'].replace(' ', '\\ ')))
-            f.write(u':0\n')
+            f.write(u'e {}\n'.format(change['name'].replace(' ', '\\ ')))
+            f.write(u'0\n')
         else:
             write_hash(f,
                        change['dst']['mode'],
@@ -200,8 +200,8 @@ def write_change(f, change):
                    change['type'])
 
 def write_footer(f):
-    f.write(u':tabfirst\n')
-    f.write(u':bdelete\n')
+    f.write(u'tabfirst\n')
+    f.write(u'bdelete\n')
 
 def write_commands(f, changes):
     write_header(f)
