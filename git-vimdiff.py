@@ -121,6 +121,7 @@ def root():
 
 def write_header(f):
     f.write(u'cd {}\n'.format(root()))
+    f.write(u'set laststatus=2\n')
 
 counter = 2
 def write_hash(f, mode, hash, name, type=None, score=None):
