@@ -8,9 +8,12 @@
 
 Use all the regular arguments to `git diff` that you already know and love, but
 view the diffs in side-by-side vim splits with a tab for each changed file.
+Unlike other similar tools, this script does not copy files to a temporary
+area; it directly reads them from the git repository or opens them from the
+working tree as appropriate.
 
-The script respects your `$EDITOR` variable, but it has to be a vim of some
-kind.
+The script respects your `$EDITOR` variable, but that editor has to be a vim of
+some kind.
 
 ### INSTALLATION
 
