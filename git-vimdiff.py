@@ -134,7 +134,7 @@ def write_hash(f, mode, hash, name, type=None, score=None):
     if mode == '160000':
         status = '{0}:\\ commit\\ {1}'.format(name, hash[:8])
         f.write(u'setlocal statusline={}\n'.format(status))
-        f.write(u'silent f {0}\\ ({1})\n'.format(name, hash[:8]))
+        f.write(u'silent file {0}:{1}:{2}\n'.format(hash[:8], counter, name))
         return
 
     f.write(u'silent 0read !git --no-pager show {}\n'.format(hash))
@@ -148,7 +148,7 @@ def write_hash(f, mode, hash, name, type=None, score=None):
         status = '{0}\\ ({1})'.format(name, mode)
 
     f.write(u'setlocal statusline={}\n'.format(status))
-    f.write(u'silent f {0}\\ ({1})\\ [{2}]\n'.format(name, hash[:8], counter))
+    f.write(u'silent file {0}:{1}:{2}\n'.format(hash[:8], counter, name))
     counter = counter + 1
 
     f.write(u'0\n')
