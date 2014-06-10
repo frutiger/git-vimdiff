@@ -154,7 +154,7 @@ def write_hash(f, mode, hash, name, type=None, score=None):
     f.write(u'0\n')
 
 def write_split(f):
-        f.write(u'vert diffsplit\n')
+        f.write(u'vertical diffsplit\n')
         f.write(u'enew\n')
 
 def write_diff(f):
