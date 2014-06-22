@@ -124,9 +124,6 @@ def write_header(f):
     f.write(u'set laststatus=2\n')
 
 def write_hash(f, mode, hash, name, type, score=None):
-    f.write(u'setlocal noswapfile\n')
-    f.write(u'set buftype=nowrite\n')
-
     name     = name.replace(' ', '\\ ')
     basename = os.path.basename(name)
 
@@ -137,6 +134,10 @@ def write_hash(f, mode, hash, name, type, score=None):
 
     f.write(u'silent 0read !git --no-pager show {}\n'.format(hash))
     f.write(u'+1d\n')
+
+    f.write(u'set buftype=nowrite\n')
+    f.write(u'setlocal nomodifiable\n')
+    f.write(u'setlocal noswapfile\n')
 
     if score != None:
         status = '{0}\\ [{1},\\ {2}%%\\ similar]\\ ({3})'.format(name,
