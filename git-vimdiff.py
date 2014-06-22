@@ -123,7 +123,7 @@ def write_header(f):
     f.write(u'cd {}\n'.format(root()))
     f.write(u'set laststatus=2\n')
 
-def write_hash(f, mode, hash, name, type=None, score=None):
+def write_hash(f, mode, hash, name, type, score=None):
     f.write(u'setlocal noswapfile\n')
     f.write(u'set buftype=nowrite\n')
 
@@ -139,29 +139,32 @@ def write_hash(f, mode, hash, name, type=None, score=None):
     f.write(u'+1d\n')
 
     if score != None:
-        status = '{0}\\ [{1}%%\\ similar]\\ ({2})'.format(name, score, mode)
-    elif type != None:
-        status = '{0}\\ [{1}]\\ ({2})'.format(name, type, mode)
+        status = '{0}\\ [{1}, {2}%%\\ similar]\\ ({3})'.format(name,
+                                                               score,
+                                                               type,
+                                                               mode)
     else:
-        status = '{0}\\ ({1})'.format(name, mode)
+        status = '{0}\\ [{1}]\\ ({2})'.format(name, type, mode)
 
     f.write(u'setlocal statusline={}\n'.format(status))
 
     f.write(u'0\n')
 
-def write_file(f, name):
+def write_file(f, name, type):
     f.write(u'e {}\n'.format(name.replace(' ', '\\ ')))
+    status = '{0}\\ [{1}]'.format(name, type)
+    f.write(u'setlocal statusline={}\n'.format(status))
     f.write(u'0\n')
 
-def write_hash_or_file(f, mode, hash, name, type=None, score=None):
+def write_hash_or_file(f, mode, hash, name, type, score=None):
     if hash == '0000000000000000000000000000000000000000':
-        write_file(f, name)
+        write_file(f, name, type)
         return
 
     object_data = subprocess.Popen(['git', 'show', hash],
                                    stdout=subprocess.PIPE).communicate()[0]
     if object_data == open(name).read():
-        write_file(f, name)
+        write_file(f, name, type)
     else:
         write_hash(f, mode, hash, name, type, score)
 
@@ -180,12 +183,14 @@ def write_change(f, change):
         write_hash_or_file(f,
                            change['dst']['mode'],
                            change['dst']['hash'],
-                           change['name'])
+                           change['name'],
+                           change['type'])
         write_split(f)
         write_hash_or_file(f,
                            change['src']['mode'],
                            change['src']['hash'],
-                           change['name'])
+                           change['name'],
+                           change['type'])
         write_diff(f)
     elif change['type'] == 'copied':
         write_hash_or_file(f,
