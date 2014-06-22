@@ -123,18 +123,16 @@ def write_header(f):
     f.write(u'cd {}\n'.format(root()))
     f.write(u'set laststatus=2\n')
 
-counter = 2
 def write_hash(f, mode, hash, name, type=None, score=None):
-    global counter
     f.write(u'setlocal noswapfile\n')
     f.write(u'set buftype=nowrite\n')
 
-    name = os.path.basename(name).replace(' ', '\\ ')
+    name     = name.replace(' ', '\\ ')
+    basename = os.path.basename(name)
 
     if mode == '160000':
         status = '{0}:\\ commit\\ {1}'.format(name, hash[:8])
         f.write(u'setlocal statusline={}\n'.format(status))
-        f.write(u'silent file {0}:{1}:{2}\n'.format(hash[:8], counter, name))
         return
 
     f.write(u'silent 0read !git --no-pager show {}\n'.format(hash))
@@ -148,8 +146,6 @@ def write_hash(f, mode, hash, name, type=None, score=None):
         status = '{0}\\ ({1})'.format(name, mode)
 
     f.write(u'setlocal statusline={}\n'.format(status))
-    f.write(u'silent file {0}:{1}:{2}\n'.format(hash[:8], counter, name))
-    counter = counter + 1
 
     f.write(u'0\n')
 
@@ -191,7 +187,7 @@ def write_change(f, change):
                            change['src']['hash'],
                            change['name'])
         write_diff(f)
-    elif change['type'] == 'copied' or change['type'] == 'renamed':
+    elif change['type'] == 'copied':
         write_hash_or_file(f,
                            change['dst']['mode'],
                            change['dst']['hash'],
@@ -199,18 +195,38 @@ def write_change(f, change):
                            change['type'],
                            change['score'])
         write_split(f)
-        write_hash_or_file(f,
-                           change['src']['mode'],
-                           change['src']['hash'],
-                           change['src']['name'],
-                           change['type'])
+        write_hash(f,
+                   change['src']['mode'],
+                   change['src']['hash'],
+                   change['src']['name'],
+                   change['type'])
         write_diff(f)
-    elif change['type'] == 'added' or change['type'] == 'deleted':
+    elif change['type'] == 'renamed':
+        write_hash_or_file(f,
+                           change['dst']['mode'],
+                           change['dst']['hash'],
+                           change['dst']['name'],
+                           change['type'],
+                           change['score'])
+        write_split(f)
+        write_hash(f,
+                   change['src']['mode'],
+                   change['src']['hash'],
+                   change['src']['name'],
+                   change['type'])
+        write_diff(f)
+    elif change['type'] == 'added':
         write_hash_or_file(f,
                            change['mode'],
                            change['hash'],
                            change['name'],
                            change['type'])
+    elif change['type'] == 'deleted':
+        write_hash(f,
+                   change['mode'],
+                   change['hash'],
+                   change['name'],
+                   change['type'])
 
 def write_footer(f):
     f.write(u'tabfirst\n')
