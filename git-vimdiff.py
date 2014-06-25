@@ -163,7 +163,9 @@ def write_hash_or_file(f, mode, hash, name, type, score=None):
 
     object_data = subprocess.Popen(['git', 'show', hash],
                                    stdout=subprocess.PIPE).communicate()[0]
-    if object_data == open(name).read():
+    if object_data == open(os.path.relpath(name,
+                                           os.path.relpath(os.getcwd(),
+                                                           root()))).read():
         write_file(f, name, type)
     else:
         write_hash(f, mode, hash, name, type, score)
