@@ -139,10 +139,10 @@ def write_hash(f, mode, hash, name, type, score=None):
     f.write(u'+1d\n')
 
     if score != None:
-        status = '{0}\\ [{1}, {2}%%\\ similar]\\ ({3})'.format(name,
-                                                               score,
-                                                               type,
-                                                               mode)
+        status = '{0}\\ [{1},\\ {2}%%\\ similar]\\ ({3})'.format(name,
+                                                                 type,
+                                                                 score,
+                                                                 mode)
     else:
         status = '{0}\\ [{1}]\\ ({2})'.format(name, type, mode)
 
