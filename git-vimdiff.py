@@ -150,15 +150,13 @@ def write_hash(f, mode, hash, name, type, score=None):
 
     f.write(u'0\n')
 
-def write_file(f, name, type):
+def write_file(f, name):
     f.write(u'e {}\n'.format(name.replace(' ', '\\ ')))
-    status = '{0}\\ [{1}]'.format(name, type)
-    f.write(u'setlocal statusline={}\n'.format(status))
     f.write(u'0\n')
 
 def write_hash_or_file(f, mode, hash, name, type, score=None):
     if hash == '0000000000000000000000000000000000000000':
-        write_file(f, name, type)
+        write_file(f, name)
         return
 
     object_data = subprocess.Popen(['git', 'show', hash],
@@ -166,7 +164,7 @@ def write_hash_or_file(f, mode, hash, name, type, score=None):
     if object_data == open(os.path.relpath(name,
                                            os.path.relpath(os.getcwd(),
                                                            root()))).read():
-        write_file(f, name, type)
+        write_file(f, name)
     else:
         write_hash(f, mode, hash, name, type, score)
 
