@@ -161,12 +161,15 @@ def write_hash_or_file(f, mode, hash, name, type, score=None):
 
     object_data = subprocess.Popen(['git', 'show', hash],
                                    stdout=subprocess.PIPE).communicate()[0]
-    if object_data == open(os.path.relpath(name,
-                                           os.path.relpath(os.getcwd(),
-                                                           root()))).read():
-        write_file(f, name)
-    else:
-        write_hash(f, mode, hash, name, type, score)
+
+    filename = os.path.relpath(name, os.path.relpath(os.getcwd(), root()))
+    if os.path.isfile(filename):
+        with open(filename) as diskfile:
+            if object_data == diskfile.read():
+                write_file(f, name)
+                return
+
+    write_hash(f, mode, hash, name, type, score)
 
 def write_split(f):
         f.write(u'vertical diffsplit\n')
