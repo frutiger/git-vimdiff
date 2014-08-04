@@ -102,8 +102,7 @@ def parse_change(f):
 
 def parse_changes(args):
     diff = subprocess.Popen(['git', '--no-pager', 'diff', '--raw', '-z',
-                             '--abbrev=40', '--find-renames=1%',
-                             '--find-copies=1%'] + args,
+                             '--abbrev=40'] + args,
                             stdout=subprocess.PIPE)
 
     changes = []
