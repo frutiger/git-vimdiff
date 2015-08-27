@@ -132,7 +132,7 @@ def write_hash(f, mode, hash, name, type, score=None):
         return
 
     f.write(u'silent 0read !git --no-pager show {}\n'.format(hash))
-    f.write(u'+1d\n')
+    f.write(u'$d\n')
 
     f.write(u'set buftype=nowrite\n')
     f.write(u'setlocal nomodifiable\n')
