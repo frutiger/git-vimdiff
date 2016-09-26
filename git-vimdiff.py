@@ -171,58 +171,65 @@ def write_hash_or_file(f, mode, hash, name, type, score=None):
 
     write_hash(f, mode, hash, name, type, score)
 
-def write_split(f):
-        f.write(u'vertical diffsplit\n')
-        f.write(u'enew\n')
+def write_diff_start(f):
+    f.write(u'vertical diffsplit\n')
+    f.write(u'wincmd j\n')
 
-def write_diff(f):
-    f.write(u'diffthis\n')
+def write_diff_mid(f):
     f.write(u'wincmd l\n')
+    f.write(u'enew\n')
+
+def write_diff_finish(f):
+    f.write(u'diffthis\n')
+    f.write(u'execute "normal" "gg"\n')
 
 def write_change(f, change):
     f.write(u'tabnew\n')
 
     if change['type'] == 'modified':
-        write_hash_or_file(f,
-                           change['dst']['mode'],
-                           change['dst']['hash'],
-                           change['name'],
-                           change['type'])
-        write_split(f)
+        write_diff_start(f)
         write_hash_or_file(f,
                            change['src']['mode'],
                            change['src']['hash'],
                            change['name'],
                            change['type'])
-        write_diff(f)
+        write_diff_mid(f)
+        write_hash_or_file(f,
+                           change['dst']['mode'],
+                           change['dst']['hash'],
+                           change['name'],
+                           change['type'])
+        write_diff_finish(f)
     elif change['type'] == 'copied':
+        write_diff_start(f)
+        write_hash(f,
+                   change['src']['mode'],
+                   change['src']['hash'],
+                   change['src']['name'],
+                   change['type'])
+        write_diff_mid(f)
         write_hash_or_file(f,
                            change['dst']['mode'],
                            change['dst']['hash'],
                            change['dst']['name'],
                            change['type'],
                            change['score'])
-        write_split(f)
-        write_hash(f,
-                   change['src']['mode'],
-                   change['src']['hash'],
-                   change['src']['name'],
-                   change['type'])
-        write_diff(f)
+        write_diff_finish(f)
     elif change['type'] == 'renamed':
+        write_diff_start(f)
+        write_hash(f,
+                   change['src']['mode'],
+                   change['src']['hash'],
+                   change['src']['name'],
+                   change['type'])
+        write_diff_mid(f)
         write_hash_or_file(f,
                            change['dst']['mode'],
                            change['dst']['hash'],
                            change['dst']['name'],
                            change['type'],
                            change['score'])
-        write_split(f)
-        write_hash(f,
-                   change['src']['mode'],
-                   change['src']['hash'],
-                   change['src']['name'],
-                   change['type'])
-        write_diff(f)
+        write_diff_finish(f)
     elif change['type'] == 'added':
         write_hash_or_file(f,
                            change['mode'],
@@ -254,6 +261,7 @@ def main(args):
     commands = io.StringIO()
     write_commands(commands, changes)
     subprocess.check_call([os.environ['EDITOR'], '-c', commands.getvalue()])
+    #print(commands.getvalue())
 
 if __name__ == '__main__':
     main(sys.argv[1:])
