@@ -3,6 +3,7 @@
 import io
 import os
 import subprocess
+import shutil
 import sys
 
 def read_until(f, char):
@@ -114,9 +115,14 @@ def parse_changes(args):
     return changes
 
 def root():
-    return subprocess.check_output(['git',
+    root = subprocess.check_output(['git',
                                     'rev-parse',
                                     '--show-toplevel']).decode('utf-8')[:-1]
+    if shutil.which('cygpath') != None:
+        root = subprocess.check_output(['cygpath', '-w', root]).decode('utf-8')[:-1]
+
+    return root
+
 
 def write_header(f):
     f.write(u'cd {}\n'.format(root()))
