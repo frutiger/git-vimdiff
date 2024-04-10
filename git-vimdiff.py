@@ -48,7 +48,10 @@ def parse_change(f):
     if type == 'copied' or type == 'renamed':
         srcname = read_until(f, b'\0')
         dstname = read_until(f, b'\0')
+        name    = b''
     else:
+        srcname = b''
+        dstname = b''
         name    = read_until(f, b'\0')
 
     if type == 'modified':
@@ -130,7 +133,6 @@ def write_header(f):
 
 def write_hash(f, mode, hash, name, type, score=None):
     name     = name.replace(' ', '\\ ')
-    basename = os.path.basename(name)
 
     if mode == '160000':
         status = '{0}:\\ commit\\ {1}'.format(name, hash[:8])
