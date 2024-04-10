@@ -172,7 +172,7 @@ def write_hash_or_file(f, mode, hash, name, type, score=None):
 
     filename = os.path.relpath(name, os.path.relpath(os.getcwd(), root()))
     if os.path.isfile(filename):
-        with open(filename) as diskfile:
+        with open(filename, 'rb') as diskfile:
             if object_data == diskfile.read():
                 write_file(f, name)
                 return
