@@ -145,6 +145,7 @@ def write_hash(f, mode, hash, name, type, score=None):
     f.write(u'set buftype=nowrite\n')
     f.write(u'setlocal nomodifiable\n')
     f.write(u'setlocal noswapfile\n')
+    f.write(u'execute "set filetype=" . (v:lua.vim.filetype.match({{"buf": bufnr(), "filename": "{}"}}) ?? "text")\n'.format(name))
 
     if score != None:
         status = '{0}\\ [{1},\\ {2}%%\\ similar]\\ ({3})'.format(name,
